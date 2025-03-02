@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "delay.h": "c",
+        "sleep.h": "c",
+        "k_phi_r.h": "c",
+        "k_phi_f.h": "c",
+        "ky.h": "c",
+        "definitions.h": "c",
+        "pid.h": "c"
+    }
+}
