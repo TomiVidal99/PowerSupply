@@ -6,6 +6,7 @@
         "k_phi_f.h": "c",
         "ky.h": "c",
         "definitions.h": "c",
-        "pid.h": "c"
+        "pid.h": "c",
+        "voltage_controller.h": "c"
     }
 }

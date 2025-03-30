@@ -1,0 +1,21 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "74676bd1-aed6-4e7c-a0e7-4729dce91ae1")
+	(paper "A4")
+	(title_block
+		(title "Voltage regulator")
+		(date "2025-03-12")
+		(rev "Revisión 1")
+		(company "Tomás Vidal")
+		(comment 1 "Es un regulador de tensión con limitador de corriente")
+		(comment 2 "Las referencias de tensión y corriente se pueden ajustar con un microcontrolador")
+	)
+	(lib_symbols)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
