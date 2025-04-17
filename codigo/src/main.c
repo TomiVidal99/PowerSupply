@@ -22,7 +22,7 @@
 // Controller for the voltage
 volatile float voltage_output_volts_prev = 0.0f;
 volatile float voltage_control_action_prev = 0.0f;
-volatile float voltage_reference_volts = 3.0f;
+volatile float voltage_reference_volts = 3.59f;
 
 // static volatile uint16_t timer0_counter;
 // volatile uint8_t modes_counter = 0;
@@ -108,7 +108,7 @@ ISR(TIMER1_OVF_vect)
   }
   else
   {
-    OCR1A = ICR1 * (control_action * 20.0f);
+    OCR1A = ICR1 * (control_action * 20.0f); // 20.0f because 100% / 5V
   }
 
   // Update the previos states/samples
