@@ -10,5 +10,5 @@ Es un regulador de tensión con limitador de corriente, ambos se puede configura
 
 # Imagenes
 
-[Diseño del circuito cuando se soldó](./Images/Circuito_soldando.jpeg)
-[Diseño teorico de las conexiones](./Images/circuito_teorico.jpeg)
+![Diseño del circuito cuando se soldó](./Images/Circuito_soldando.jpeg)
+![Diseño teorico de las conexiones](./Images/circuito_teorico.jpeg)
