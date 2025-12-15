@@ -15,7 +15,5 @@
 void init_pwm();
 void init_adc();
 void init_timer_0();
-static inline uint16_t saturate_u32_to_u16(uint32_t v, uint16_t max);
-static uint16_t compute_controller(uint16_t error);
 
 #endif // DEFINITIONS_H

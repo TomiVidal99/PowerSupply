@@ -37,15 +37,12 @@
  * a PID controller, it's just a step response identification
  */
 // #define STEP_RESPONSE
-#define PID_BIAS_OFFSET (100U - 82U) // this is an offset due to aliniarities
+#define REFERENCE_OFFSET_MV (200U) 
 
 // PID variables
-volatile uint16_t adc_sample;
-static int32_t e_k_1;
-static int32_t e_k_2;
-static int32_t u_k_1;
-
-uint16_t setpoint = 200U;
+static volatile int16_t reference = 1200U;
+static volatile int32_t error_prev = 0U;
+static volatile int32_t control_action_prev = 0U;
 
 int main(void)
 {
@@ -92,57 +89,37 @@ ISR(TIMER0_OVF_vect)
 {
   TCNT0 = 6; // Reload preload to keep exactly 1 ms period
 
+  uint32_t v_out_ms;
+
   // Read voltage (ADC0)
   ADCSRA |= (1 << ADSC);
   while (ADCSRA & (1 << ADSC))
     ;
-  adc_sample = ADC;
+  v_out_ms = (ADC * (5000UL)) / (1023UL);
 
-  // PID
-  uint16_t error;
-  uint16_t actual_reference = setpoint + PID_BIAS_OFFSET;
-  if (adc_sample > actual_reference)
-    error = adc_sample - actual_reference;
-  else
-    error = actual_reference - adc_sample;
-  uint16_t control = compute_controller(error);
-  OCR1A = control;
+  // - - - - - - - - - -  PID
+  int32_t error = (int32_t)reference - (int32_t)2*(REFERENCE_OFFSET_MV + v_out_ms);
+  int32_t control_action = (PID_GAIN_E_0 * (error) +
+                            PID_GAIN_E_1 * (error_prev) +
+                            PID_GAIN_U * (control_action_prev)) /
+                           PID_GAIN_SCALE;
 
-  // OCR1A = 0;
+  if (control_action < 0)
+    control_action = 0;
+  else if (control_action > PWM_TOP)
+    control_action = (uint16_t)PWM_TOP;
+
+  OCR1A = (uint16_t)control_action;
+
+  error_prev = error;
+  control_action_prev = OCR1A;
+  // - - - - - - - - - -
 
   PIN_B_ON(PB4);
   _delay_us(50);
   PIN_B_OFF(PB4);
 }
 #endif // STEP_RESPONSE
-
-static uint16_t compute_controller(uint16_t error)
-{
-  int32_t scaled_e0 = (int32_t)error;
-  int32_t term_b0 = (PID_B0 * scaled_e0);
-  int32_t term_b1 = (PID_B1 * e_k_1);
-  int32_t sum_b = term_b0 + term_b1;
-  int32_t term_a1 = (PID_A1 * u_k_1);
-  int32_t num = sum_b - term_a1;
-  int32_t denom = (int32_t)PID_COEF_SCALE;
-  int32_t u_scaled = num / denom;
-  if (u_scaled < 0)
-    u_scaled = 0;
-  uint32_t u_out = (uint32_t)u_scaled;
-  if (u_out > PWM_TOP)
-    u_out = PWM_TOP;
-  e_k_2 = e_k_1;
-  e_k_1 = scaled_e0;
-  u_k_1 = (int32_t)u_out;
-  return (uint16_t)u_out;
-}
-
-static inline uint16_t saturate_u32_to_u16(uint32_t v, uint16_t max)
-{
-  if (v > (uint32_t)max)
-    return max;
-  return (uint16_t)v;
-}
 
 void init_adc()
 {
